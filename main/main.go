@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 )
 
 // Auth 统一验证拦截器，每个接口都需要提前验证
@@ -91,13 +92,28 @@ func main() {
 	}
 
 	route := r.Group("/api")
-	route.GET("/", HandlerForRoot)
+	route.GET("/hello", HandlerForRoot)
+
+	r.GET("/xxxput")
 
 	srv.ListenAndServe()
 
 }
 
+var store = sessions.NewCookieStore([]byte("something-very-secret"))
+
 func HandlerForRoot(c *gin.Context) {
+
+	session, err := store.Get(c.Request, "session-name")
+	if err != nil {
+
+		c.String(http.StatusUnauthorized, "缺少SESSION")
+		return
+	}
+	fmt.Println(session)
+
+	foo := session.Values["foo"]
+	fmt.Println(foo)
 
 	c.JSON(200, `{ "data":"hello !" }`)
 }

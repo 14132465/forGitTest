@@ -1,0 +1,71 @@
+version: "2"
+
+run:
+  timeout: 5m
+  concurrency: 0
+  tests: true
+
+output:
+  formats:
+    text:
+      print-linter-name: true
+      print-issued-lines: true
+      colors: true
+    tab:
+      path: golangci-lint-report.txt
+      print-linter-name: true
+      colors: false
+
+linters:
+  default: standard
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - revive
+    - gosec
+    - wsl_v5
+  disable:
+    - lll
+    - wsl
+
+  exclusions:
+    rules:
+      - linters:
+          - revive
+        text: "package-comments"
+    paths:
+      - "pkg/gozero"
+      - "pkg/protobuf"
+      - _test\.go
+
+  settings:
+    wsl_v5:
+      allow-first-in-block: true
+      allow-whole-block: false
+      branch-max-lines: 2
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+      exclude-functions:
+        - (*github.com/gin-gonic/gin.Context).Error
+    revive:
+      rules:
+        - name: blank-imports
+        - name: context-as-argument
+        - name: context-keys-type
+        - name: early-return
+        - name: error-return
+        - name: error-naming
+        - name: exported
+        - name: increment-decrement
+        - name: indent-error-flow
+        - name: superfluous-else
+    gosec:
+      excludes:
+        - G204
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
